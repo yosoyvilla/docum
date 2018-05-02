@@ -1,0 +1,16 @@
+    <!-- Side Navbar -->
+    <nav class="side-navbar">
+      <!-- Sidebar Header-->
+      <div class="sidebar-header d-flex align-items-center">
+        <div class="title">
+          <h1 class="h4">Usuario Administrador</h1>
+        </div>
+      </div>
+      <ul class="list-unstyled">
+                <li *ngIf="!isAdmin"><a href="/home"> <i class="icon-home"></i>Home </a></li>
+                <li *ngIf="isAdmin"><a href="/users"> <i class="icon-grid"></i>Usuarios </a></li>
+                <li *ngIf="isAdmin"><a href="/metrics"> <i class="fa fa-bar-chart"></i>Metricas </a></li>
+                <li *ngIf="isAdmin"><a href="/rents"> <i class="icon-padnote"></i>Alquileres </a></li>
+                <li *ngIf="isAdmin"><a href="/config"> <i class="icon-flask"></i>Configuracion </a></li>
+      </ul>
+    </nav>

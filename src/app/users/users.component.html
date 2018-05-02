@@ -1,0 +1,60 @@
+<div class="page">
+  <!-- Main Navbar-->
+<app-navbar></app-navbar>
+  <div class="page-content d-flex align-items-stretch">
+<app-sidenav></app-sidenav>
+<div class="content-inner">
+  <!-- Page Header-->
+  <header class="page-header">
+    <div class="container-fluid">
+      <h2 class="no-margin-bottom">Tables</h2>
+    </div>
+  </header>
+  <!-- Breadcrumb-->
+  <div class="breadcrumb-holder container-fluid">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/home">Home</a></li>
+      <li class="breadcrumb-item active">Usuarios            </li>
+    </ul>
+  </div>
+  <div *ngIf="successOnUpdate" class="alert alert-success" role="alert">
+      <strong>{{alertMessage}}</strong>
+    </div>
+    <div *ngIf="errorOnUpdate" class="alert alert-warning" role="alert">
+        <strong>{{alertMessage}}</strong>
+      </div>
+  <section class="tables">
+    <div class="container-fluid">
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-header d-flex align-items-center">
+              <h3 class="h4">USUARIOS</h3>
+            </div>
+            <div class="card-body">
+                <button type="button" (click)="updateUsers()" class="btn btn-primary">Refrescar</button>
+              <div class="table-responsive">
+                  <!-- <ng2-smart-table [settings]="settings" (createConfirm)="onCreateConfirm($event)" (editConfirm)="onEditConfirm($event)" (deleteConfirm)="onDeleteConfirm($event)" [source]="source"></ng2-smart-table> -->
+              </div>
+            </div>
+          </div>
+          <strong>*Cuando estes creando un usuario no ingreses ningun 'ID', el sistema lo agrega automaticamente.</strong>
+      </div>
+    </div>
+  </section>
+  <!-- Page Footer-->
+  <footer class="main-footer">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-6">
+          <p>&copy; 2018</p>
+        </div>
+        <div class="col-sm-6 text-right">
+          <p>Dise&#241;ado por <a href="#" class="external">Connect And Do</a>
+          <!-- Please do not remove the backlink to us unless you support further theme's development at https://bootstrapious.com/donate. It is part of the license conditions. Thank you for understanding :)-->
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+  </div>
+</div>

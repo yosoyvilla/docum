@@ -13,12 +13,13 @@ import { AlwaysauthGuard } from './guards/alwaysauth.guard';
 import { OnlyloggedinusersGuard } from './guards/onlyloggedinusers.guard';
 import { UserService } from './services/user.service';
 import { FormsModule } from '@angular/forms';
-import { UsersComponent } from './users/users.component';
+import { UsersComponent, ButtonViewComponent } from './users/users.component';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
-
+import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { UserdataService } from './services/userdata.service';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
     DashboardComponent,
     NavbarComponent,
     SidenavComponent,
-    UsersComponent
+    UsersComponent,
+    ButtonViewComponent
   ],
   imports: [
     CONST_ROUTING,
@@ -39,9 +41,13 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
     BrowserAnimationsModule,
     NoopAnimationsModule,
     FormsModule,
-    PdfViewerModule
+    PdfViewerModule,
+    Ng2SmartTableModule
   ],
-  providers: [AlwaysauthGuard, OnlyloggedinusersGuard, UserService],
+  entryComponents: [
+    ButtonViewComponent
+  ],
+  providers: [AlwaysauthGuard, OnlyloggedinusersGuard, UserService, UserdataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

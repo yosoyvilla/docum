@@ -25,8 +25,9 @@ $email = isset($_GET['email']) ? $_GET['email'] : die();
 $name = isset($_GET['uname']) ? $_GET['uname'] : die();
 $phone = isset($_GET['uphone']) ? $_GET['uphone'] : die();
 $id = isset($_GET['id']) ? $_GET['id'] : die();
+$rut = isset($_GET['rut']) ? $_GET['rut'] : die();
 
-$exct = $user->updateById($id, $email, $name, $phone);
+$exct = $user->updateById($id, $rut, $email, $name, $phone);
 
 print_r(json_encode($exct));
 

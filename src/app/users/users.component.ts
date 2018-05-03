@@ -1,6 +1,34 @@
-import { Component, OnInit } from "@angular/core";
-import { Ng2SmartTableModule, LocalDataSource } from "ng2-smart-table";
+import { Component, OnInit, EventEmitter, Input, Output } from "@angular/core";
+import { Ng2SmartTableModule, LocalDataSource, ViewCell } from "ng2-smart-table";
 import { UserService } from "../services/user.service";
+import { UserdataService } from '../services/userdata.service';
+
+@Component({
+  selector: 'button-view',
+  template: `
+    <button (click)="onClick()" (save)="onInitUpload($event)" style="color: white;" type="button" class="btn btn-primary">{{ renderValue }}</button>
+  `,
+})
+export class ButtonViewComponent implements ViewCell, OnInit {
+
+  renderValue: string;
+
+  constructor(private userDataService: UserdataService) { }
+
+  @Input() value: string | number;
+  @Input() rowData: any;
+
+  @Output() save: EventEmitter<any> = new EventEmitter();
+
+  ngOnInit() {
+    this.renderValue = this.value.toString().toUpperCase();
+  }
+
+  onClick() {
+    this.userDataService.add(this.rowData);
+    this.save.emit(this.rowData);
+  }
+}
 
 @Component({
   selector: "app-users",
@@ -8,6 +36,9 @@ import { UserService } from "../services/user.service";
   styleUrls: ["./users.component.css"]
 })
 export class UsersComponent implements OnInit {
+
+  constructor(private userService: UserService, public userDataService: UserdataService) {}
+
   settings = {
     add: {
       inputClass: "addFields",
@@ -31,7 +62,11 @@ export class UsersComponent implements OnInit {
         title: "ID",
         editable: false,
         width: "0px",
-        class: "idCell"
+        class: "idCell",
+        filter: false
+      },
+      rut: {
+        title: "RUT"
       },
       email: {
         title: "EMAIL"
@@ -41,6 +76,17 @@ export class UsersComponent implements OnInit {
       },
       phone: {
         title: "TELEFONO"
+      },
+      upload: {
+        title: "DOCUMENTOS",
+        type: "custom",
+        filter: false,
+        renderComponent: ButtonViewComponent,
+        onComponentInitFunction(instance) {
+          instance.save.subscribe(row => {
+            document.getElementById('btnLM').click();
+          });
+        }
       }
     },
     actions: { add: true, edit: true, delete: true, columnTitle: "Acciones" }
@@ -54,10 +100,32 @@ export class UsersComponent implements OnInit {
 
   source: LocalDataSource;
 
-  constructor(private userService: UserService) {}
+  onCreateMode: boolean = false;
+
+  uploadUserName: string = "";
+  uploadUserRut: string = "";
+  uploadUserID: string = "";
+
+  pdfSrc: string = "";
 
   ngOnInit() {
     this.updateUsers();
+  }
+
+  onInitUpload(){
+    let userData = this.userDataService.get();
+    this.uploadUserName = userData.name;
+    this.uploadUserRut = userData.rut;
+    console.log(this.userDataService.get());
+  }
+
+  onStartUpload(){
+    console.log(this.pdfSrc);
+  }
+
+  onChangeFile(event){
+    const files = event.srcElement.files;
+    console.log(files);
   }
 
   updateUsers(){
@@ -68,9 +136,11 @@ export class UsersComponent implements OnInit {
       for (let user of userResponse) {
         data.push({
           id: user.id,
+          rut: user.rut,
           email: user.email,
           name: user.name,
-          phone: user.phone
+          phone: user.phone,
+          upload: 'Subir Documentos'
         });
       }
       this.source = new LocalDataSource(data);
@@ -80,6 +150,7 @@ export class UsersComponent implements OnInit {
   onEditConfirm(event) {
     if (
       event.newData.email === "" ||
+      event.newData.rut === "" ||
       event.newData.name === "" ||
       event.newData.phone === ""
     ) {
@@ -94,6 +165,7 @@ export class UsersComponent implements OnInit {
       this.userService
         .update(
           event.newData.id,
+          event.newData.rut,
           event.newData.email,
           event.newData.name,
           event.newData.phone
@@ -150,6 +222,7 @@ export class UsersComponent implements OnInit {
     );
     if (
       event.newData.email === "" ||
+      event.newData.rut === "" ||
       event.newData.name === "" ||
       event.newData.phone === ""
     ) {
@@ -161,8 +234,10 @@ export class UsersComponent implements OnInit {
         this.errorOnUpdate = false;
       }, 3000);
     } else {
+      this.onCreateMode = true;
       this.userService
         .register(
+          event.newData.rut,
           event.newData.email,
           pwd,
           event.newData.name,
@@ -176,13 +251,15 @@ export class UsersComponent implements OnInit {
             event.confirm.resolve();
           } else {
             this.alertMessage =
-              "Ocurrio un error al crear el usuario, por favor verifique que no exista en el sistema.";
+              "Ocurrio un error al crear el usuario, por favor verifique que no exista el RUT en el sistema.";
             this.errorOnUpdate = true;
             event.confirm.reject();
           }
           setTimeout(() => {
             this.successOnUpdate = false;
             this.errorOnUpdate = false;
+            this.onCreateMode = false;
+            this.updateUsers();
           }, 3000);
         });
     }

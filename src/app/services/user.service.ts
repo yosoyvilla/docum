@@ -38,11 +38,13 @@ export class UserService {
     .catch(this.handleError);
   }
 
-  update(id, email, uname, uphone): Observable<any> {
+  update(id, rut, email, uname, uphone): Observable<any> {
     return this.http.get(
       Env.serverurl +
         "user/updatebyid.php?email=" +
         email +
+        "&rut=" +
+        rut +
         "&uname=" +
         uname +
         "&uphone=" +
@@ -59,11 +61,13 @@ export class UserService {
     );
   }
 
-  register(email, pwd, uname, uphone): Observable<any> {
+  register(rut, email, pwd, uname, uphone): Observable<any> {
     return this.http.get(
       Env.serverurl +
         "user/create.php?email=" +
         email +
+        "&rut=" +
+        rut +
         "&pwd=" +
         pwd +
         "&uname=" +

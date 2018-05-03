@@ -38,7 +38,7 @@ CREATE TABLE `users` (
   `token` varchar(256) NULL,
   `created` datetime NOT NULL,
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE (`email`)
+  UNIQUE (`rut`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --

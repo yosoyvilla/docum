@@ -81,9 +81,9 @@ class User
         }
     }
 
-    public function create($email, $pwd, $name, $phone)
+    public function create($rut, $email, $pwd, $name, $phone)
     {
-        $query = "INSERT INTO " . $this->table_name . " SET email='".$email."', password='".$pwd."', usertype='Cliente', name='".$name."', phone='".$phone."', created='".date('Y-m-d H:i:s')."', modified='".date('Y-m-d H:i:s')."'";
+        $query = "INSERT INTO " . $this->table_name . " SET email='".$email."', rut='".$rut."', password='".$pwd."', usertype='Cliente', name='".$name."', phone='".$phone."', created='".date('Y-m-d H:i:s')."', modified='".date('Y-m-d H:i:s')."'";
         $stmt = $this->conn->prepare($query);
         if ($stmt->execute()) {
             return true;
@@ -127,9 +127,9 @@ class User
         return false;
     }
 
-    public function updateById($id, $email, $name, $phone)
+    public function updateById($id, $rut, $email, $name, $phone)
     {
-        $query = "UPDATE ".$this->table_name." SET name='".$name."', email='".$email."', phone='".$phone."', modified='".date('Y-m-d H:i:s')."' WHERE id='".$id."'";
+        $query = "UPDATE ".$this->table_name." SET name='".$name."', SET='".$rut."', email='".$email."', phone='".$phone."', modified='".date('Y-m-d H:i:s')."' WHERE id='".$id."'";
         $stmt = $this->conn->prepare($query);
         if ($stmt->execute()) {
             return true;

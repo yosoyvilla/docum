@@ -44,11 +44,10 @@ export class LoginComponent implements OnInit {
             localStorage.setItem("token", genToken);
             localStorage.setItem("logged", "true");
             if(userResponse.usertype === "Administrador"){
-
+              this.router.navigate(["/users"]);
             }else{
-              
+              this.router.navigate(["/home"]);
             }
-            this.router.navigate(["/home"]);
           });
       }else{
         this.isError = true;

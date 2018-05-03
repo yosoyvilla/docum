@@ -26,6 +26,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $user_data = array(
         "id" => $id,
         "email" => $email,
+        "rut" => $rut,
         "usertype" => $usertype,
         "name" => $name,
         "phone" => $phone,

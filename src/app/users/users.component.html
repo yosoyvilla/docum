@@ -33,11 +33,48 @@
             <div class="card-body">
                 <button type="button" (click)="updateUsers()" class="btn btn-primary">Refrescar</button>
               <div class="table-responsive">
-                  <!-- <ng2-smart-table [settings]="settings" (createConfirm)="onCreateConfirm($event)" (editConfirm)="onEditConfirm($event)" (deleteConfirm)="onDeleteConfirm($event)" [source]="source"></ng2-smart-table> -->
+                  <ng2-smart-table *ngIf="!onCreateMode" [settings]="settings" (createConfirm)="onCreateConfirm($event)" (editConfirm)="onEditConfirm($event)" (deleteConfirm)="onDeleteConfirm($event)" [source]="source"></ng2-smart-table>
+                  <div *ngIf="onCreateMode" style="text-align: center;">
+                  <div class="spinner-outer">
+                    <div class="spin"></div>
+                </div>
+                CREANDO EL USUARIO
+              </div>
               </div>
             </div>
           </div>
           <strong>*Cuando estes creando un usuario no ingreses ningun 'ID', el sistema lo agrega automaticamente.</strong>
+          <!-- Button trigger modal -->
+<button type="button" (click)="onInitUpload()" id="btnLM" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter" hidden></button>
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Usuario: {{uploadUserName}}  ||  RUT: {{uploadUserRut}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <div class="form-group">
+              <label for="fileName">Nombre del archivo:</label>
+              <input type="text" class="form-control" id="fileName" aria-describedby="fileNameHelp" placeholder="Ingrese el nombre del archivo...">
+              <small id="fileNameHelp" class="form-text text-muted">Por favor ingrese un nombre que sea referente al archivo a subir.</small>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputFile">Archivo:</label>
+              <input type="file" class="form-control-file" id="exampleInputFile" aria-describedby="fileHelp">
+              <small id="fileHelp" (change)="onChangeFile($event)" class="form-text text-muted">Por favor suba los archivos en formato PDF.</small>
+            </div>
+            <button type="submit" (click)="onStartUpload()" class="btn btn-primary">Subir Archivo</button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
       </div>
     </div>
   </section>

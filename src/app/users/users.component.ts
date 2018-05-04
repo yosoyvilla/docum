@@ -4,6 +4,49 @@ import { UserService } from "../services/user.service";
 import { UserdataService } from '../services/userdata.service';
 import { Env } from '../../enums/environments';
 
+
+@Component({
+  selector: 'button-admin-view',
+  template: `
+    <input [(ngModel)]="checkboxValue" (change)="onChange()" type="checkbox" class="form-check-input">
+  `,
+})
+export class ButtonAdminViewComponent implements ViewCell, OnInit {
+
+  renderValue: string;
+
+  usertype: string = "Cliente";
+
+  checkboxValue: boolean = true;
+
+  constructor(private userDataService: UserdataService, private userService: UserService) { }
+
+  @Input() value: string | number;
+  @Input() rowData: any;
+
+  @Output() saveAdmin: EventEmitter<any> = new EventEmitter();
+
+  ngOnInit() {
+    this.checkboxValue = (this.value === "true");
+  }
+
+  onChange() {
+    if(this.checkboxValue){
+      this.usertype = "Administrador";
+    }else{
+      this.usertype = "Cliente";
+    }
+    this.userService.changeutype(this.rowData.id, this.usertype).subscribe(toAdminResponse => {
+      if (JSON.parse(toAdminResponse.text()) !== true) {
+        alert("Ocurrio un error convirtiendo el usuario " + this.rowData.name + " a adiministrador!");
+      } else {
+        alert("Se ha convertido correctamente a administrador el usuario: " + this.rowData.name);
+      }
+      this.saveAdmin.emit(this.rowData);
+    });
+  }
+}
+
 @Component({
   selector: 'button-view',
   template: `
@@ -87,6 +130,17 @@ export class UsersComponent implements OnInit {
         onComponentInitFunction(instance) {
           instance.save.subscribe(row => {
             document.getElementById('btnLM').click();
+          });
+        }
+      },
+      admin: {
+        title: "ADMINISTRADOR",
+        type: "custom",
+        filter: false,
+        renderComponent: ButtonAdminViewComponent,
+        onComponentInitFunction(instance) {
+          instance.saveAdmin.subscribe(row => {
+            console.log("UserType was modified!");
           });
         }
       }
@@ -186,7 +240,6 @@ export class UsersComponent implements OnInit {
             .subscribe(uploadResponse => {
               this.onUploadMode = false;
               this.onFinishUpload = true;
-              console.log(uploadResponse);
               if (JSON.parse(uploadResponse.text()) === true) {
                 this.onFinishUploadMessage = "Se ha subido correctamente el documento al sistema.";
               }else{
@@ -237,14 +290,23 @@ export class UsersComponent implements OnInit {
     let data = [];
     this.userService.getAll().subscribe(userResponse => {
       for (let user of userResponse) {
-        data.push({
-          id: user.id,
-          rut: user.rut,
-          email: user.email,
-          name: user.name,
-          phone: user.phone,
-          upload: 'Subir Documentos'
-        });
+        let isAdmin = "false";
+        if(user.usertype === "Administrador"){
+          isAdmin = "true";
+        }
+        if(user.rut !== "" &&
+           user.name !== ""
+        ){
+          data.push({
+            id: user.id,
+            rut: user.rut,
+            email: user.email,
+            name: user.name,
+            phone: user.phone,
+            upload: 'Subir Documentos',
+            admin: isAdmin
+          });
+        }
       }
       this.source = new LocalDataSource(data);
     });

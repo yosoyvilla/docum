@@ -31,6 +31,16 @@ class User
         return $stmt;
     }
 
+    public function readOneByRut($rut)
+    {
+        $query = "SELECT *
+            FROM
+                " . $this->table_name . " WHERE rut = '" .$rut. "'";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
+
     public function readOneByID($uid)
     {
         $query = "SELECT `id`, `email`, `password`, `usertype`, `name`, `phone`, `created`, `modified`
@@ -139,7 +149,21 @@ class User
 
     public function updateById($id, $rut, $email, $name, $phone)
     {
-        $query = "UPDATE ".$this->table_name." SET name='".$name."', SET='".$rut."', email='".$email."', phone='".$phone."', modified='".date('Y-m-d H:i:s')."' WHERE id='".$id."'";
+        $query = "UPDATE ".$this->table_name." SET name='".$name."', rut='".$rut."', email='".$email."', phone='".$phone."', modified='".date('Y-m-d H:i:s')."' WHERE id='".$id."'";
+        $stmt = $this->conn->prepare($query);
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
+    }
+
+    public function updateMyUserById($id, $pwd, $email, $name, $phone)
+    {
+      if($pwd === "No Changes"){
+        $query = "UPDATE ".$this->table_name." SET name='".$name."', email='".$email."', phone='".$phone."', modified='".date('Y-m-d H:i:s')."' WHERE id='".$id."'";
+      }else{
+        $query = "UPDATE ".$this->table_name." SET name='".$name."', password='".$pwd."', email='".$email."', phone='".$phone."', modified='".date('Y-m-d H:i:s')."' WHERE id='".$id."'";
+      }
         $stmt = $this->conn->prepare($query);
         if ($stmt->execute()) {
             return true;
@@ -159,7 +183,17 @@ class User
 
     public function deletebyid($id)
     {
-        $query = "DELETE FROM ".$this->table_name." WHERE id='".$id."'";
+        $query = "DELETE ".$this->table_name." WHERE id='".$id."'";
+        $stmt = $this->conn->prepare($query);
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
+    }
+
+    public function changeUserType($id, $usertype)
+    {
+        $query = "UPDATE ".$this->table_name." SET usertype='".$usertype."' WHERE id='".$id."'";
         $stmt = $this->conn->prepare($query);
         if ($stmt->execute()) {
             return true;

@@ -23,6 +23,17 @@ export class DocumsService {
     .catch(this.handleError);
   }
 
+  getAllByRut(rut: string): Observable<IfileModel[]> {
+    return this.http.get(
+      Env.serverurl +
+        "docums/read_all_rut.php?rut=" +
+        rut
+    ).map((response: Response) => {
+      return <IfileModel[]>response.json();
+    })
+    .catch(this.handleError);
+  }
+
   getOneDocument(rut: string): Observable<IfileModel> {
     return this.http.get(
       Env.serverurl +
@@ -43,6 +54,14 @@ export class DocumsService {
       return <IfileModel>response.json();
     })
     .catch(this.handleError);
+  }
+
+  delete(id): Observable<any> {
+    return this.http.get(
+      Env.serverurl +
+        "docums/deletebyid.php?id=" +
+        id
+    );
   }
 
   private handleError(error: Response) {

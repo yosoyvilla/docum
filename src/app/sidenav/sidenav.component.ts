@@ -8,10 +8,12 @@ import { Component, OnInit } from '@angular/core';
 export class SidenavComponent implements OnInit {
 
   isAdmin: boolean = true;
+  activeUser: string = "";
 
   constructor() { }
 
   ngOnInit() {
+    this.activeUser = localStorage.getItem('name');
     this.isAdmin = localStorage.getItem("usertype") === "Administrador";
   }
 

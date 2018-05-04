@@ -6,14 +6,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CONST_ROUTING } from './/app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { DashboardComponent, ButtonsViewUserComponent } from './dashboard/dashboard.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { SidenavComponent } from './sidenav/sidenav.component';
 import { AlwaysauthGuard } from './guards/alwaysauth.guard';
 import { OnlyloggedinusersGuard } from './guards/onlyloggedinusers.guard';
 import { UserService } from './services/user.service';
 import { FormsModule } from '@angular/forms';
-import { UsersComponent, ButtonViewComponent } from './users/users.component';
+import { UsersComponent, ButtonViewComponent, ButtonAdminViewComponent } from './users/users.component';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
@@ -22,6 +22,10 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { UserdataService } from './services/userdata.service';
 import { DocumsComponent, ButtonsViewComponent } from './docums/docums.component';
 import { DocumsService } from './services/docums.service';
+import { OnlyAdminGuard } from './guards/onlyadmin.guard';
+import { MyuserdataComponent } from './myuserdata/myuserdata.component';
+
+declare var require: any;
 
 
 @NgModule({
@@ -34,7 +38,10 @@ import { DocumsService } from './services/docums.service';
     UsersComponent,
     ButtonViewComponent,
     DocumsComponent,
-    ButtonsViewComponent
+    ButtonsViewComponent,
+    ButtonAdminViewComponent,
+    ButtonsViewUserComponent,
+    MyuserdataComponent
   ],
   imports: [
     CONST_ROUTING,
@@ -50,9 +57,11 @@ import { DocumsService } from './services/docums.service';
   ],
   entryComponents: [
     ButtonViewComponent,
-    ButtonsViewComponent
+    ButtonsViewComponent,
+    ButtonAdminViewComponent,
+    ButtonsViewUserComponent
   ],
-  providers: [AlwaysauthGuard, OnlyloggedinusersGuard, UserService, UserdataService, DocumsService],
+  providers: [AlwaysauthGuard, OnlyloggedinusersGuard, UserService, UserdataService, DocumsService, OnlyAdminGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

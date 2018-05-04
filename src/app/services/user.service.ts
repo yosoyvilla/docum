@@ -61,11 +61,36 @@ export class UserService {
     );
   }
 
+  updateMyUser(id, email, uname, uphone, pwd): Observable<any> {
+    return this.http.get(
+      Env.serverurl +
+        "user/updatemyuserbyid.php?email=" +
+        email +
+        "&pwd=" +
+        pwd +
+        "&uname=" +
+        uname +
+        "&uphone=" +
+        uphone +
+        "&id=" + id
+    );
+  }
+
   delete(id): Observable<any> {
     return this.http.get(
       Env.serverurl +
         "user/deletebyid.php?id=" +
         id
+    );
+  }
+
+  changeutype(id, type): Observable<any> {
+    return this.http.get(
+      Env.serverurl +
+        "user/changeutype.php?id=" +
+        id +
+        "&utype=" +
+        type
     );
   }
 
@@ -89,6 +114,17 @@ export class UserService {
     return this.http.get(
       Env.serverurl +
         "user/read_all.php"
+    ).map((response: Response) => {
+      return <IUser[]>response.json();
+    })
+    .catch(this.handleError);
+  }
+
+  getOneByRut(rut: string): Observable<IUser[]> {
+    return this.http.get(
+      Env.serverurl +
+        "user/read_by_rut.php?rut=" +
+        rut
     ).map((response: Response) => {
       return <IUser[]>response.json();
     })

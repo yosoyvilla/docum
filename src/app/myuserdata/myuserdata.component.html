@@ -1,0 +1,11 @@
+<div class="card">
+    <div class="card-header d-flex align-items-center">
+       <h3 class="h4">Mis Datos</h3>
+    </div>
+    <div class="card-body">
+       <div class="table-responsive">
+          <ng2-smart-table [settings]="settings" (editConfirm)="onEditConfirm($event)"
+          [source]="source"></ng2-smart-table>
+       </div>
+    </div>
+ </div>

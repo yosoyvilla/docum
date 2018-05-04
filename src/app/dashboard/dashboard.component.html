@@ -1,102 +1,91 @@
 <div class="page">
-  <!-- Main Navbar-->
-  <app-navbar></app-navbar>
-  <div class="page-content d-flex align-items-stretch">
-    <app-sidenav></app-sidenav>
-    <div class="content-inner">
-      <!-- Page Header-->
-      <header class="page-header">
-        <div class="container-fluid">
-          <h2 class="no-margin-bottom">Dashboard</h2>
-        </div>
-      </header>
-      <!-- Dashboard Counts Section-->
-      <section class="dashboard-counts no-padding-bottom">
-        <div class="container-fluid">
-          <div class="row bg-white has-shadow">
-            <!-- Item -->
-            <div class="col-xl-6 col-sm-6">
-              <div class="item d-flex align-items-center">
-                <div class="icon bg-violet">
-                  <i class="icon-user"></i>
-                </div>
-                <div class="title">
-                  <span>Usuarios
-                    <br>Registrados</span>
-                </div>
-                <div class="number">
-                  <!-- <strong>{{totalRegisteredUsers}}</strong> -->
-                </div>
-              </div>
-            </div>
-            <!-- Item -->
-            <div class="col-xl-6 col-sm-6">
-              <div class="item d-flex align-items-center">
-                <div class="icon bg-red">
-                  <i class="icon-padnote"></i>
-                </div>
-                <div class="title">
-                  <span>Canchas
-                    <br>Alquiladas</span>
-                </div>
-                <div class="number">
-                  <!-- <strong>{{totalRentedFields}}</strong> -->
-                </div>
-              </div>
-            </div>
+    <!-- Main Navbar-->
+    <app-navbar></app-navbar>
+    <div class="page-content d-flex align-items-stretch">
+       <app-sidenav></app-sidenav>
+       <div class="content-inner">
+          <!-- Page Header-->
+          <header class="page-header">
+             <div class="container-fluid">
+                <h2 class="no-margin-bottom">Bienvenido a nuestro sistema</h2>
+             </div>
+          </header>
+          <div *ngIf="successOnUpdate" class="alert alert-success" role="alert">
+             <strong>{{alertMessage}}</strong>
           </div>
-        </div>
-      </section>
-      <!-- Dashboard Header Section    -->
-      <section class="dashboard-header">
-        <div class="container-fluid">
-          <div class="row">
-            <!-- Line Chart            -->
-            <div class="chart col-lg-8 col-12">
-              <div class="line-chart bg-white d-flex align-items-center justify-content-center has-shadow">
-                <!-- <ngx-charts-line-chart [view]="view" [timeline]="timeline" [legendTitle]="legendTitle" [scheme]="colorScheme" [results]="multi"
-                  [gradient]="gradient" [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="showLegend" [showXAxisLabel]="showXAxisLabel"
-                  [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel" [autoScale]="autoScale"
-                  (select)="onSelect($event)">
-                </ngx-charts-line-chart> -->
-              </div>
-            </div>
-            <div class="chart col-lg-4 col-12">
-              <!-- Bar Chart   -->
-              <div class="bar-chart has-shadow bg-white" style="max-height: 100%;height: 100%;">
-                <div class="title">
-                  <br>
-                  <small>Alquileres Hoy</small>
+          <div *ngIf="errorOnUpdate" class="alert alert-warning" role="alert">
+             <strong>{{alertMessage}}</strong>
+          </div>
+          <section class="tables">
+             <div class="container-fluid">
+                <div class="col-lg-12">
+                    <app-myuserdata></app-myuserdata>
+                   <div style="margin-top: 5em;" class="card">
+                      <div class="card-header d-flex align-items-center">
+                         <h3 class="h4">Mis Documentos</h3>
+                      </div>
+                      <div class="card-body">
+                         <button type="button" (click)="updateDocuments()" class="btn btn-primary">Refrescar</button>
+                         <div class="table-responsive">
+                            <ng2-smart-table *ngIf="!onCreateMode" [settings]="settings" (createConfirm)="onCreateConfirm($event)" (editConfirm)="onEditConfirm($event)"
+                            (deleteConfirm)="onDeleteConfirm($event)" [source]="source"></ng2-smart-table>
+                         </div>
+                      </div>
+                   </div>
+
+                   <button type="button" (click)="onPreviewModeOpen()" id="btnLM" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter"
+                   hidden></button>
+                <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                   <div class="modal-dialog modal-dialog-centered" style="max-width: 60%;" role="document">
+                      <div class="modal-content">
+                         <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Documento: {{previewDocumentName}} || Subido Por: {{previewDoctorName}}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                         </div>
+                         <div *ngIf="onPreviewMode" class="modal-body">
+                            <div style="text-align: center;" class="form-group">
+                               <div style="margin-bottom: 2em; margin-top: 2em;" class="alert alert-info" role="alert">
+                                  <strong>Vista Previa Documento</strong>
+                               </div>
+                               <pdf-viewer [src]="pdfSrc" [render-text]="true" [original-size]="false" [fit-to-page]="true" style="display: block;"></pdf-viewer>
+                            </div>
+                         </div>
+                         <div *ngIf="!onPreviewMode" style="text-align: center;">
+                            <div class="spinner-outer">
+                               <div class="spin"></div>
+                            </div>
+                            CARGANDO EL DOCUMENTO
+                         </div>
+                         <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                         </div>
+                      </div>
+                   </div>
                 </div>
-                <div *ngIf="haveRentedFieldsToday">
-                <!-- <ngx-charts-bar-vertical [view]="viewB" [scheme]="colorScheme" [results]="singleB" [gradient]="gradient" [xAxis]="showXAxisB"
-                  [yAxis]="showYAxisB" [legend]="showLegendB" [showXAxisLabel]="showXAxisLabelB" [showYAxisLabel]="showYAxisLabelB"
-                  [xAxisLabel]="xAxisLabelB" [yAxisLabel]="yAxisLabelB" (select)="onSelect($event)">
-                </ngx-charts-bar-vertical> -->
-              </div>
-              <div *ngIf="!haveRentedFieldsToday">
-                  <strong style="margin-left: 1em;">No hay canchas alquiladas el dia de hoy.</strong>
-              </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <!-- Page Footer-->
-      <footer class="main-footer">
-        <div class="container-fluid">
-          <div class="row">
-            <div class="col-sm-6">
-              <p>&copy; 2018</p>
-            </div>
-            <div class="col-sm-6 text-right">
-              <p>Dise&#241;ado por
-                <a href="#" class="external">Connect And Do</a>
-                <!-- Please do not remove the backlink to us unless you support further theme's development at https://bootstrapious.com/donate. It is part of the license conditions. Thank you for understanding :)-->
-            </div>
-          </div>
-        </div>
-      </footer>
+
+                </div>
+             </div>
+          </section>
+          <!-- Page Footer-->
+          <footer class="main-footer">
+             <div class="container-fluid">
+                <div class="row">
+                   <div class="col-sm-6">
+                      <p>&copy; 2018</p>
+                   </div>
+                   <div class="col-sm-6 text-right">
+                      <p>
+                         Dise&#241;ado por
+                         <a href="#" class="external">Connect And Do</a>
+                         <!-- Please do not remove the backlink to us unless you support further theme's development at https://bootstrapious.com/donate. It is part of the license conditions. Thank you for understanding :)-->
+                   </div>
+                </div>
+             </div>
+          </footer>
+       </div>
     </div>
-  </div>
-</div>
+ </div>
+ <input type="text" id="preRut" hidden>
+ <button type="button" (click)="onDownloadDocument()" id="btnDownload" hidden></button>

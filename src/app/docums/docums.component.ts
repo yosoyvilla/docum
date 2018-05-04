@@ -34,6 +34,13 @@ export class ButtonsViewComponent implements ViewCell, OnInit {
       document.getElementById('btnLM').click();
     }, 1000);
   }
+
+  onClickDownload() {
+    this.save.emit(this.rowData.id);
+    setTimeout(() => {
+      document.getElementById('btnDownload').click();
+    }, 1000);
+  }
 }
 
 @Component({
@@ -156,119 +163,47 @@ export class DocumsComponent implements OnInit {
         this.onPreviewMode = true;
         this.uploadDocumError = false;
         this.uploadDocumErrorMessage = "";
-        // this.pdfSrc = String(files);
         this.showPDFViewer = true;
       };
     });
   }
 
-  onStartUpload(){
-    // const files = document.getElementById('exampleInputFile').value;
-    const files = (<HTMLInputElement>document.getElementById('exampleInputFile')).value;
-
-    if(this.documFileName === "" || files === ""){
-      this.uploadDocumError = true;
-      this.uploadDocumErrorMessage = "Por favor seleccione el documento PDF y seleccione un nombre para el documento en el sistema.";
-    }else{
-      if(String(files).indexOf("pdf") < 0){
-        this.uploadDocumError = true;
-        this.uploadDocumErrorMessage = "Por favor seleccione un documento con extension PDF.";
-      }else{
-        let $img: any = document.querySelector('#exampleInputFile');
-
-        if (typeof (FileReader) !== 'undefined') {
-          let reader = new FileReader();
-
-          reader.onload = (e: any) => {
-            this.pdfSrc = e.target.result;
-          };
-
-          reader.readAsArrayBuffer($img.files[0]);
-        }
-        this.onPreviewMode = true;
-        this.uploadDocumError = false;
-        this.uploadDocumErrorMessage = "";
-        // this.pdfSrc = String(files);
-        this.showPDFViewer = true;
-      }
-    }
-  }
-
-  updateDocuments(){
-    this.errorOnUpdate = false;
-    this.successOnUpdate = false;
-    let data = [];
-    this.documsService.getAll().subscribe(documResponse => {
-      for (let document of documResponse) {
-        data.push({
-          id: document.id,
-          rut: document.rut,
-          filename: document.filename,
-          doctorname: document.doctorname,
-          created: document.created,
-          documents: 'ACCIONES'
-        });
-      }
-      this.source = new LocalDataSource(data);
-    });
-  }
-
-  onEditConfirm(event) {
-    if (
-      event.newData.email === "" ||
-      event.newData.rut === "" ||
-      event.newData.name === "" ||
-      event.newData.phone === ""
-    ) {
-      event.confirm.reject();
-      this.errorOnUpdate = true;
-      this.alertMessage = "Por favor no deje ningun espacio en blanco.";
-      setTimeout(() => {
-        this.successOnUpdate = false;
-        this.errorOnUpdate = false;
-      }, 3000);
+  onDownloadDocument(){
+    let b64toBlob = require('b64-to-blob');
+    let contentType = 'application/pdf';
+    this.onPreviewMode = false;
+    let reader = new FileReader();
+    const idDocum = (<HTMLInputElement>document.getElementById('preRut')).value;
+    this.documsService.getOneDocumentByID(idDocum).subscribe(documResponse => {
+      let file = b64toBlob(documResponse.filevalue, contentType);
+      if(navigator.msSaveBlob){
+        let filename = documResponse.filename;
+        navigator.msSaveBlob(file, filename);
     } else {
-      this.userService
-        .update(
-          event.newData.id,
-          event.newData.rut,
-          event.newData.email,
-          event.newData.name,
-          event.newData.phone
-        )
-        .subscribe(updateResponse => {
-          JSON.parse(updateResponse.text()) === true
-            ? (this.successOnUpdate = true)
-            : (this.errorOnUpdate = true);
-          if (JSON.parse(updateResponse.text()) !== true) {
-            this.alertMessage = "Ocurrio un error al actualizar el usuario.";
-            event.confirm.reject();
-          } else {
-            this.alertMessage = "Se ha actualizado correctamente el usuario.";
-            event.confirm.resolve();
-            this.updateDocuments();
-          }
-          setTimeout(() => {
-            this.successOnUpdate = false;
-            this.errorOnUpdate = false;
-          }, 3000);
-        });
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(file);
+        link.setAttribute('visibility','hidden');
+        link.download = documResponse.filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
+    });
   }
 
   onDeleteConfirm(event) {
     if (
-      window.confirm("Realmente desea eliminar al usuario: " + event.data.name)
+      window.confirm("Realmente desea eliminar el documento: " + event.data.filename)
     ) {
-      this.userService.delete(event.data.id).subscribe(deleteResponse => {
+      this.documsService.delete(event.data.id).subscribe(deleteResponse => {
         JSON.parse(deleteResponse.text()) === true
           ? (this.successOnUpdate = true)
           : (this.errorOnUpdate = true);
         if (JSON.parse(deleteResponse.text()) !== true) {
-          this.alertMessage = "Ocurrio un error al eliminar el usuario.";
+          this.alertMessage = "Ocurrio un error al eliminar el documento.";
           event.confirm.reject();
         } else {
-          this.alertMessage = "Se ha eliminado correctamente el usuario.";
+          this.alertMessage = "Se ha eliminado correctamente el documento.";
           event.confirm.resolve();
         }
         setTimeout(() => {
@@ -281,61 +216,28 @@ export class DocumsComponent implements OnInit {
     }
   }
 
-  onCreateConfirm(event) {
-    let pwd = this.randomString(
-      10,
-      "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    );
-    if (
-      event.newData.email === "" ||
-      event.newData.rut === "" ||
-      event.newData.name === "" ||
-      event.newData.phone === ""
-    ) {
-      event.confirm.reject();
-      this.errorOnUpdate = true;
-      this.alertMessage = "Por favor no deje ningun espacio en blanco.";
-      setTimeout(() => {
-        this.successOnUpdate = false;
-        this.errorOnUpdate = false;
-      }, 3000);
-    } else {
-      this.onCreateMode = true;
-      this.userService
-        .register(
-          event.newData.rut,
-          event.newData.email,
-          pwd,
-          event.newData.name,
-          event.newData.phone
-        )
-        .subscribe(registerReturn => {
-          let registerResponse = JSON.parse(registerReturn.text());
-          if (registerResponse === "true" || registerResponse === true) {
-            this.alertMessage = "Se ha creado correctamente el usuario.";
-            this.successOnUpdate = true;
-            event.confirm.resolve();
-          } else {
-            this.alertMessage =
-              "Ocurrio un error al crear el usuario, por favor verifique que no exista el RUT en el sistema.";
-            this.errorOnUpdate = true;
-            event.confirm.reject();
-          }
-          setTimeout(() => {
-            this.successOnUpdate = false;
-            this.errorOnUpdate = false;
-            this.onCreateMode = false;
-            this.updateDocuments();
-          }, 3000);
-        });
-    }
-  }
-
-  randomString(length: number, chars: string) {
-    let result = "";
-    for (var i = length; i > 0; --i)
-      result += chars[Math.floor(Math.random() * chars.length)];
-    return result;
+  updateDocuments(){
+    this.errorOnUpdate = false;
+    this.successOnUpdate = false;
+    let data = [];
+    this.documsService.getAll().subscribe(documResponse => {
+      for (let document of documResponse) {
+        if(document.rut !== "" &&
+           document.filename !== "" &&
+           document.doctorname !== "" &&
+           document.created !== ""){
+            data.push({
+              id: document.id,
+              rut: document.rut,
+              filename: document.filename,
+              doctorname: document.doctorname,
+              created: document.created,
+              documents: 'ACCIONES'
+            });
+        }
+      }
+      this.source = new LocalDataSource(data);
+    });
   }
 
 }

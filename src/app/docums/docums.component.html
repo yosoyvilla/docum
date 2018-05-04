@@ -24,7 +24,7 @@
                          <h3 class="h4">Documentos</h3>
                       </div>
                       <div class="card-body">
-                         <button type="button" (click)="updateUsers()" class="btn btn-primary">Refrescar</button>
+                         <button type="button" (click)="updateDocuments()" class="btn btn-primary">Refrescar</button>
                          <div class="table-responsive">
                             <ng2-smart-table *ngIf="!onCreateMode" [settings]="settings" (createConfirm)="onCreateConfirm($event)" (editConfirm)="onEditConfirm($event)"
                             (deleteConfirm)="onDeleteConfirm($event)" [source]="source"></ng2-smart-table>
@@ -87,3 +87,4 @@
     </div>
  </div>
  <input type="text" id="preRut" hidden>
+ <button type="button" (click)="onDownloadDocument()" id="btnDownload" hidden></button>

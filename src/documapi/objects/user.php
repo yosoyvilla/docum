@@ -91,6 +91,16 @@ class User
         return false;
     }
 
+    public function uploadfile($rut, $filename, $filetype, $filetoupload, $doctorname)
+    {
+        $query = "INSERT INTO documfiles SET filename='".$filename."', rut='".$rut."', filetype='".$filetype."', doctorname='".$doctorname."', filevalue='".$filetoupload."', created='".date('Y-m-d H:i:s')."'";
+        $stmt = $this->conn->prepare($query);
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
+    }
+
     public function lostaccount($email)
     {
         $query = "SELECT `id`, `email`, `password`, `usertype`, `name`, `phone`, `created`, `modified`

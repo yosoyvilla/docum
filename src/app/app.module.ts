@@ -20,6 +20,8 @@ import { CommonModule } from '@angular/common';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { UserdataService } from './services/userdata.service';
+import { DocumsComponent, ButtonsViewComponent } from './docums/docums.component';
+import { DocumsService } from './services/docums.service';
 
 
 @NgModule({
@@ -30,7 +32,9 @@ import { UserdataService } from './services/userdata.service';
     NavbarComponent,
     SidenavComponent,
     UsersComponent,
-    ButtonViewComponent
+    ButtonViewComponent,
+    DocumsComponent,
+    ButtonsViewComponent
   ],
   imports: [
     CONST_ROUTING,
@@ -45,9 +49,10 @@ import { UserdataService } from './services/userdata.service';
     Ng2SmartTableModule
   ],
   entryComponents: [
-    ButtonViewComponent
+    ButtonViewComponent,
+    ButtonsViewComponent
   ],
-  providers: [AlwaysauthGuard, OnlyloggedinusersGuard, UserService, UserdataService],
+  providers: [AlwaysauthGuard, OnlyloggedinusersGuard, UserService, UserdataService, DocumsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

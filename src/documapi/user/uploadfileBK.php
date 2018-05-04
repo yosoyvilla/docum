@@ -21,13 +21,13 @@ $user = new User($db);
 $data = json_decode(file_get_contents("php://input"));
 
 // get posted data
-$email = isset($_GET['email']) ? $_GET['email'] : die();
-$pwd = isset($_GET['pwd']) ? $_GET['pwd'] : die();
-$name = isset($_GET['uname']) ? $_GET['uname'] : die();
-$phone = isset($_GET['uphone']) ? $_GET['uphone'] : die();
+$doctorname = isset($_GET['doctorname']) ? $_GET['doctorname'] : die();
+$filetoupload = isset($_GET['filetoupload']) ? $_GET['filetoupload'] : die();
+$filetype = isset($_GET['filetype']) ? $_GET['filetype'] : die();
+$filename = isset($_GET['filename']) ? $_GET['filename'] : die();
 $rut = isset($_GET['rut']) ? $_GET['rut'] : die();
 
-$exct = $user->create($rut, $email, $pwd, $name, $phone);
+$exct = $user->uploadfile($rut, $filename, $filetype, $filetoupload, $doctorname);
 
 print_r(json_encode($exct));
 
@@ -51,11 +51,11 @@ if($exct === "true" || $exct === true){
         $message = file_get_contents('register.html');
 
         // Replace the % with the actual information
-        $message = str_replace('%username%', $rut, $message);
-        $message = str_replace('%password%', $pwd, $message);
+        $message = str_replace('%filetoupload%', $filename, $message);
+        $message = str_replace('%doctorname%', $doctorname, $message);
 
         //Content
-        $mail->Subject = 'Detalles de su cuenta PREOMED SALUD';
+        $mail->Subject = 'Se ha subido un nuevo documento al sistema PREOMED SALUD';
         $mail->MsgHTML($message);
         $mail->send();
     } catch (Exception $e) {

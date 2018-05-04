@@ -3,18 +3,21 @@ import { Ng2SmartTableModule, LocalDataSource, ViewCell } from "ng2-smart-table"
 import { UserService } from "../services/user.service";
 import { UserdataService } from '../services/userdata.service';
 import { Env } from '../../enums/environments';
+import { IfileModel } from '../models/fileModel';
+import { DocumsService } from '../services/docums.service';
 
 @Component({
   selector: 'button-view',
   template: `
-    <button (click)="onClick()" (save)="onInitUpload($event)" style="color: white;" type="button" class="btn btn-primary">{{ renderValue }}</button>
+    <button (click)="onClickPreview()" (save)="onPreviewModeOpen($event)" style="color: white;width: 100%;max-width: 100%;" type="button" class="btn btn-primary">Vista Previa</button>
+    <button (click)="onClickDownload()" (save)="onPreviewModeOpen($event)" style="color: white;width: 100%;max-width: 100%;" type="button" class="btn btn-primary">Descargar</button>
   `,
 })
-export class ButtonViewComponent implements ViewCell, OnInit {
+export class ButtonsViewComponent implements ViewCell, OnInit {
 
   renderValue: string;
 
-  constructor(private userDataService: UserdataService) { }
+  constructor(private documsService: DocumsService) { }
 
   @Input() value: string | number;
   @Input() rowData: any;
@@ -25,20 +28,22 @@ export class ButtonViewComponent implements ViewCell, OnInit {
     this.renderValue = this.value.toString().toUpperCase();
   }
 
-  onClick() {
-    this.userDataService.add(this.rowData);
-    this.save.emit(this.rowData);
+  onClickPreview() {
+    this.save.emit(this.rowData.id);
+    setTimeout(() => {
+      document.getElementById('btnLM').click();
+    }, 1000);
   }
 }
 
 @Component({
-  selector: "app-users",
-  templateUrl: "./users.component.html",
-  styleUrls: ["./users.component.css"]
+  selector: 'app-docums',
+  templateUrl: './docums.component.html',
+  styleUrls: ['./docums.component.css']
 })
-export class UsersComponent implements OnInit {
+export class DocumsComponent implements OnInit {
 
-  constructor(private userService: UserService, public userDataService: UserdataService) {
+  constructor(private userService: UserService, public userDataService: UserdataService, private documsService: DocumsService) {
   }
 
   settings = {
@@ -70,28 +75,28 @@ export class UsersComponent implements OnInit {
       rut: {
         title: "RUT"
       },
-      email: {
-        title: "EMAIL"
+      filename: {
+        title: "NOMBRE DOCUMENTO"
       },
-      name: {
-        title: "NOMBRE"
+      doctorname: {
+        title: "SUBIDO POR"
       },
-      phone: {
-        title: "TELEFONO"
+      created: {
+        title: "FECHA DE CREACION"
       },
-      upload: {
-        title: "DOCUMENTOS",
+      documents: {
+        title: "ACCIONES",
         type: "custom",
         filter: false,
-        renderComponent: ButtonViewComponent,
+        renderComponent: ButtonsViewComponent,
         onComponentInitFunction(instance) {
           instance.save.subscribe(row => {
-            document.getElementById('btnLM').click();
+            (<HTMLInputElement>document.getElementById('preRut')).value = row;
           });
         }
       }
     },
-    actions: { add: true, edit: true, delete: true, columnTitle: "Acciones" }
+    actions: { add: false, edit: false, delete: true, columnTitle: "Eliminar" }
   };
 
   errorOnUpdate: boolean = false;
@@ -107,6 +112,7 @@ export class UsersComponent implements OnInit {
   uploadUserName: string = "";
   uploadUserRut: string = "";
   uploadUserID: string = "";
+  fileModel: IfileModel;
 
   documFileName: string = "";
 
@@ -128,75 +134,32 @@ export class UsersComponent implements OnInit {
 
   onFinishUploadMessage: string = "";
 
+  previewDocumentName: string = "";
+
+  previewDoctorName: string = "";
+
   ngOnInit() {
-    this.updateUsers();
+    this.updateDocuments();
   }
 
-  onInitUpload(){
-    this.documFileName = "";
+  onPreviewModeOpen(){
+    let b64toBlob = require('b64-to-blob');
+    let contentType = 'application/pdf';
     this.onPreviewMode = false;
-    this.uploadDocumError = false;
-    let userData = this.userDataService.get();
-    this.uploadUserName = userData.name;
-    this.uploadUserRut = userData.rut;
-    this.patientemail = userData.email;
-    this.showPDFViewer = false;
-    this.onUploadMode = false;
-    this.onFinishUpload = false;
-    this.onFinishUploadMessage = "";
-    (<HTMLInputElement>document.getElementById('exampleInputFile')).value = "";
-  }
-
-  uploadFileToServer(){
-    this.onUploadMode = true;
-    let dataUpload = [];
-    const files = (<HTMLInputElement>document.getElementById('exampleInputFile')).value;
-
-    if(this.documFileName === "" || files === ""){
-      this.uploadDocumError = true;
-      this.uploadDocumErrorMessage = "Por favor seleccione el documento PDF y seleccione un nombre para el documento en el sistema.";
-    }else{
-      if(String(files).indexOf("pdf") < 0){
-        this.uploadDocumError = true;
-        this.uploadDocumErrorMessage = "Por favor seleccione un documento con extension PDF.";
-      }else{
-        let $img: any = document.querySelector('#exampleInputFile');
-
-        if (typeof (FileReader) !== 'undefined') {
-          let reader = new FileReader();
-          let file = $img.files[0];
-          reader.readAsDataURL(file);
-          reader.onload = (e: any) => {
-            this.pdfSrc = e.target.result;
-            dataUpload.push({
-              data: {
-              documname: this.documFileName.trim().replace(/_/g, ' '),
-              filename: file.name,
-              filetype: file.type,
-              rut: this.uploadUserRut,
-              value: e.target.result.split(',')[1],
-              doctorname: localStorage.getItem('name'),
-              patientemail: this.patientemail,
-              patientname: this.uploadUserName
-            }
-            });
-            this.userService.uploadFile(
-              dataUpload
-            )
-            .subscribe(uploadResponse => {
-              this.onUploadMode = false;
-              this.onFinishUpload = true;
-              console.log(uploadResponse);
-              if (JSON.parse(uploadResponse.text()) === true) {
-                this.onFinishUploadMessage = "Se ha subido correctamente el documento al sistema.";
-              }else{
-                this.onFinishUploadMessage = "Tuvimos un error al subir el archivo, por favor intente nuevamente.";
-              }
-            });
-          };
-        }
-      }
-    }
+    let reader = new FileReader();
+    const idDocum = (<HTMLInputElement>document.getElementById('preRut')).value;
+    this.documsService.getOneDocumentByID(idDocum).subscribe(documResponse => {
+      let file = b64toBlob(documResponse.filevalue, contentType);
+      reader.readAsDataURL(file);
+      reader.onload = (e: any) => {
+        this.pdfSrc = e.target.result;
+        this.onPreviewMode = true;
+        this.uploadDocumError = false;
+        this.uploadDocumErrorMessage = "";
+        // this.pdfSrc = String(files);
+        this.showPDFViewer = true;
+      };
+    });
   }
 
   onStartUpload(){
@@ -231,19 +194,19 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  updateUsers(){
+  updateDocuments(){
     this.errorOnUpdate = false;
     this.successOnUpdate = false;
     let data = [];
-    this.userService.getAll().subscribe(userResponse => {
-      for (let user of userResponse) {
+    this.documsService.getAll().subscribe(documResponse => {
+      for (let document of documResponse) {
         data.push({
-          id: user.id,
-          rut: user.rut,
-          email: user.email,
-          name: user.name,
-          phone: user.phone,
-          upload: 'Subir Documentos'
+          id: document.id,
+          rut: document.rut,
+          filename: document.filename,
+          doctorname: document.doctorname,
+          created: document.created,
+          documents: 'ACCIONES'
         });
       }
       this.source = new LocalDataSource(data);
@@ -283,7 +246,7 @@ export class UsersComponent implements OnInit {
           } else {
             this.alertMessage = "Se ha actualizado correctamente el usuario.";
             event.confirm.resolve();
-            this.updateUsers();
+            this.updateDocuments();
           }
           setTimeout(() => {
             this.successOnUpdate = false;
@@ -362,7 +325,7 @@ export class UsersComponent implements OnInit {
             this.successOnUpdate = false;
             this.errorOnUpdate = false;
             this.onCreateMode = false;
-            this.updateUsers();
+            this.updateDocuments();
           }, 3000);
         });
     }
@@ -374,4 +337,5 @@ export class UsersComponent implements OnInit {
       result += chars[Math.floor(Math.random() * chars.length)];
     return result;
   }
+
 }

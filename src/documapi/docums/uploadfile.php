@@ -1,7 +1,6 @@
 <?php
 // required headers
 header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
@@ -18,16 +17,15 @@ $db = $database->getConnection();
 
 $user = new User($db);
 
-$data = json_decode(file_get_contents("php://input"));
+$content = file_get_contents("php://input");
 
-// get posted data
-$email = isset($_GET['email']) ? $_GET['email'] : die();
-$pwd = isset($_GET['pwd']) ? $_GET['pwd'] : die();
-$name = isset($_GET['uname']) ? $_GET['uname'] : die();
-$phone = isset($_GET['uphone']) ? $_GET['uphone'] : die();
-$rut = isset($_GET['rut']) ? $_GET['rut'] : die();
+$data = json_decode($content);
 
-$exct = $user->create($rut, $email, $pwd, $name, $phone);
+$nameoffile = 'documents/'.$data[0]->data->documname.'.pdf';
+
+file_put_contents($nameoffile, base64_decode($data[0]->data->value));
+
+$exct = $user->uploadfile($data[0]->data->rut, $data[0]->data->documname, $data[0]->data->filetype, $data[0]->data->value, $data[0]->data->doctorname);
 
 print_r(json_encode($exct));
 
@@ -46,16 +44,18 @@ if($exct === "true" || $exct === true){
 
         //Recipients
         $mail->setFrom('no.responder.preomedsalud@gmail.com', 'PREOMED SALUD');
-        $mail->addAddress($email, $name);     // Add a recipient
+        $mail->addAddress($data[0]->data->patientemail, $data[0]->data->patientname);     // Add a recipient
         // Retrieve the email template required
-        $message = file_get_contents('register.html');
+        $message = file_get_contents('uploadfile.html');
+
+        $mail->addAttachment($nameoffile);
 
         // Replace the % with the actual information
-        $message = str_replace('%username%', $rut, $message);
-        $message = str_replace('%password%', $pwd, $message);
+        $message = str_replace('%filetoupload%', $data[0]->data->documname, $message);
+        $message = str_replace('%doctorname%', $data[0]->data->doctorname, $message);
 
         //Content
-        $mail->Subject = 'Detalles de su cuenta PREOMED SALUD';
+        $mail->Subject = 'Se ha subido un nuevo documento al sistema PREOMED SALUD';
         $mail->MsgHTML($message);
         $mail->send();
     } catch (Exception $e) {

@@ -1,5 +1,6 @@
+import { HttpClient, HttpHeaders} from '@angular/common/http';
 import { Injectable } from "@angular/core";
-import { Http, Response } from "@angular/http";
+import { Http, Response, RequestOptions, Headers } from "@angular/http";
 import { Observable } from "rxjs/Observable";
 import { Env } from "../../enums/environments";
 import { of } from "rxjs/observable/of";
@@ -36,6 +37,13 @@ export class UserService {
       return <IUser>response.json();
     })
     .catch(this.handleError);
+  }
+
+  uploadFile(fileJson: any): Observable<any> {
+    const options = new RequestOptions();
+    options.headers = new Headers();
+    options.headers.append('Content-Type', 'application/json');
+    return this.http.post(Env.serverurl + "user/uploadfile.php", JSON.stringify(fileJson), options);
   }
 
   update(id, rut, email, uname, uphone): Observable<any> {

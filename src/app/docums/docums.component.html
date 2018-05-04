@@ -1,0 +1,89 @@
+<div class="page">
+    <!-- Main Navbar-->
+    <app-navbar></app-navbar>
+    <div class="page-content d-flex align-items-stretch">
+       <app-sidenav></app-sidenav>
+       <div class="content-inner">
+          <!-- Page Header-->
+          <header class="page-header">
+             <div class="container-fluid">
+                <h2 class="no-margin-bottom">Documentos</h2>
+             </div>
+          </header>
+          <div *ngIf="successOnUpdate" class="alert alert-success" role="alert">
+             <strong>{{alertMessage}}</strong>
+          </div>
+          <div *ngIf="errorOnUpdate" class="alert alert-warning" role="alert">
+             <strong>{{alertMessage}}</strong>
+          </div>
+          <section class="tables">
+             <div class="container-fluid">
+                <div class="col-lg-12">
+                   <div class="card">
+                      <div class="card-header d-flex align-items-center">
+                         <h3 class="h4">Documentos</h3>
+                      </div>
+                      <div class="card-body">
+                         <button type="button" (click)="updateUsers()" class="btn btn-primary">Refrescar</button>
+                         <div class="table-responsive">
+                            <ng2-smart-table *ngIf="!onCreateMode" [settings]="settings" (createConfirm)="onCreateConfirm($event)" (editConfirm)="onEditConfirm($event)"
+                            (deleteConfirm)="onDeleteConfirm($event)" [source]="source"></ng2-smart-table>
+                         </div>
+                      </div>
+                   </div>
+
+                   <button type="button" (click)="onPreviewModeOpen()" id="btnLM" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter"
+                   hidden></button>
+                <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                   <div class="modal-dialog modal-dialog-centered" style="max-width: 60%;" role="document">
+                      <div class="modal-content">
+                         <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Documento: {{previewDocumentName}} || Subido Por: {{previewDoctorName}}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                         </div>
+                         <div *ngIf="onPreviewMode" class="modal-body">
+                            <div style="text-align: center;" class="form-group">
+                               <div style="margin-bottom: 2em; margin-top: 2em;" class="alert alert-info" role="alert">
+                                  <strong>Vista Previa Documento</strong>
+                               </div>
+                               <pdf-viewer [src]="pdfSrc" [render-text]="true" [original-size]="false" [fit-to-page]="true" style="display: block;"></pdf-viewer>
+                            </div>
+                         </div>
+                         <div *ngIf="!onPreviewMode" style="text-align: center;">
+                            <div class="spinner-outer">
+                               <div class="spin"></div>
+                            </div>
+                            CARGANDO EL DOCUMENTO
+                         </div>
+                         <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                         </div>
+                      </div>
+                   </div>
+                </div>
+
+                </div>
+             </div>
+          </section>
+          <!-- Page Footer-->
+          <footer class="main-footer">
+             <div class="container-fluid">
+                <div class="row">
+                   <div class="col-sm-6">
+                      <p>&copy; 2018</p>
+                   </div>
+                   <div class="col-sm-6 text-right">
+                      <p>
+                         Dise&#241;ado por
+                         <a href="#" class="external">Connect And Do</a>
+                         <!-- Please do not remove the backlink to us unless you support further theme's development at https://bootstrapious.com/donate. It is part of the license conditions. Thank you for understanding :)-->
+                   </div>
+                </div>
+             </div>
+          </footer>
+       </div>
+    </div>
+ </div>
+ <input type="text" id="preRut" hidden>

@@ -21,9 +21,9 @@ $user = new User($db);
 $data = json_decode(file_get_contents("php://input"));
 
 // get posted data
-$email = isset($_GET['email']) ? $_GET['email'] : die();
+$rut = isset($_GET['rut']) ? $_GET['rut'] : die();
 
-$exct = $user->lostaccount($email);
+$exct = $user->lostaccount($rut);
 
 $mail = new PHPMailer();                              // Passing `true` enables exceptions
 
@@ -33,23 +33,23 @@ if($user->exists === "true" || $user->exists === true){
         $mail->isSMTP();                                      // Set mailer to use SMTP
         $mail->Host = '	smtp.gmail.com';  // Specify main and backup SMTP servers
         $mail->SMTPAuth = true;                               // Enable SMTP authentication
-        $mail->Username = 'complejo.lautaro.no.responder@gmail.com';                 // SMTP username
-        $mail->Password = 'Complejo2018';                           // SMTP password
+        $mail->Username = 'no.responder.preomedsalud@gmail.com';                 // SMTP username
+        $mail->Password = 'Preomed2018*';                           // SMTP password
         $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
         $mail->Port = 25;                                    // TCP port to connect to
-    
+
         //Recipients
-        $mail->setFrom('complejo.lautaro.no.responder@gmail.com', 'Complejo Lautaro');
-        $mail->addAddress($email, $user->name);     // Add a recipient
+        $mail->setFrom('no.responder.preomedsalud@gmail.com', 'PREOMED SALUD');
+        $mail->addAddress($user->email, $user->name);     // Add a recipient
         // Retrieve the email template required
         $message = file_get_contents('lost.html');
-        
+
         // Replace the % with the actual information
-        $message = str_replace('%username%', $email, $message);
+        $message = str_replace('%username%', $user->rut, $message);
         $message = str_replace('%password%', $user->pwd, $message);
-    
+
         //Content
-        $mail->Subject = 'Detalles de su cuenta COMPLEJO LAUTARO';
+        $mail->Subject = 'Detalles de su cuenta PREOMED SALUD';
         $mail->MsgHTML($message);
         $mail->send();
         print_r(json_encode(true));

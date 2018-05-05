@@ -207,11 +207,14 @@ export class UsersComponent implements OnInit {
     const files = (<HTMLInputElement>document.getElementById('exampleInputFile')).value;
 
     if(this.documFileName === "" || files === ""){
+      this.onUploadMode = false;
       this.uploadDocumError = true;
       this.uploadDocumErrorMessage = "Por favor seleccione el documento PDF y seleccione un nombre para el documento en el sistema.";
     }else{
       if(String(files).indexOf("pdf") < 0){
         this.uploadDocumError = true;
+        this.onFinishUpload = false;
+        this.onUploadMode = false;
         this.uploadDocumErrorMessage = "Por favor seleccione un documento con extension PDF.";
       }else{
         let $img: any = document.querySelector('#exampleInputFile');
@@ -314,10 +317,8 @@ export class UsersComponent implements OnInit {
 
   onEditConfirm(event) {
     if (
-      event.newData.email === "" ||
       event.newData.rut === "" ||
-      event.newData.name === "" ||
-      event.newData.phone === ""
+      event.newData.name === ""
     ) {
       event.confirm.reject();
       this.errorOnUpdate = true;
@@ -381,15 +382,18 @@ export class UsersComponent implements OnInit {
   }
 
   onCreateConfirm(event) {
-    let pwd = this.randomString(
-      10,
-      "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    );
+    let pwd = "preomed2018";
+    if(event.newData.email === ""){
+      pwd = "preomed2018";
+    }else{
+      pwd = this.randomString(
+        10,
+        "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      );
+    }
     if (
-      event.newData.email === "" ||
       event.newData.rut === "" ||
-      event.newData.name === "" ||
-      event.newData.phone === ""
+      event.newData.name === ""
     ) {
       event.confirm.reject();
       this.errorOnUpdate = true;

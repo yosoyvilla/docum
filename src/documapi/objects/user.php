@@ -111,22 +111,19 @@ class User
         return false;
     }
 
-    public function lostaccount($email)
+    public function lostaccount($rut)
     {
-        $query = "SELECT `id`, `email`, `password`, `usertype`, `name`, `phone`, `created`, `modified`
+        $query = "SELECT `rut`, `password`, `name`, `email`
             FROM
-                " . $this->table_name . " WHERE email = '" . $email . "'";
+                " . $this->table_name . " WHERE rut = '" . $rut . "'";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$row['usertype'] == null) {
-            $this->id = $row['id'];
-            $this->usertype = $row['usertype'];
+        if (!$row['rut'] == null) {
+            $this->rut = $row['rut'];
             $this->pwd = $row['password'];
+            $this->email = $row['email'];
             $this->name = $row['name'];
-            $this->phone = $row['phone'];
-            $this->created = $row['created'];
-            $this->modified = $row['modified'];
             $this->exists = true;
         } else {
             $this->exists = false;
@@ -183,7 +180,7 @@ class User
 
     public function deletebyid($id)
     {
-        $query = "DELETE ".$this->table_name." WHERE id='".$id."'";
+        $query = "DELETE FROM ".$this->table_name." WHERE id='".$id."'";
         $stmt = $this->conn->prepare($query);
         if ($stmt->execute()) {
             return true;

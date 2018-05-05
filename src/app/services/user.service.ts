@@ -39,6 +39,14 @@ export class UserService {
     .catch(this.handleError);
   }
 
+  remember(rut: string): Observable<any> {
+    return this.http.get(
+      Env.serverurl +
+        "user/lostaccount.php?rut=" +
+        rut
+    );
+  }
+
   uploadFile(fileJson: any): Observable<any> {
     const options = new RequestOptions();
     options.headers = new Headers();

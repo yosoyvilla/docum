@@ -18,16 +18,16 @@
                 <div class="form d-flex align-items-center">
                    <div class="content">
                       <div class="form-group">
-                         <input id="login-username" [(ngModel)] ="rut" type="text" name="loginUsername" required data-msg="Por favor ingrese su correo ..." class="input-material" autocomplete="off"/>
-                         <label for="login-username" class="label-material">RUT</label>
+                         <input id="login-username" (input)="changeUsernameStyle()" [(ngModel)] ="rut" type="text" name="loginUsername" required data-msg="Por favor ingrese su correo ..." class="input-material" autocomplete="off"/>
+                         <label id="lblusername" for="login-username" class="label-material">RUT</label>
                       </div>
                       <div class="form-group">
-                         <input id="login-password" [(ngModel)] ="pwd" type="password" name="loginPassword" required data-msg="Por favor ingrese su password ..." class="input-material" autocomplete="off"/>
-                         <label for="login-password" class="label-material">Password</label>
+                         <input id="login-password" (input)="changePasswordStyle()" [(ngModel)] ="pwd" type="password" name="loginPassword" required data-msg="Por favor ingrese su password ..." class="input-material" autocomplete="off"/>
+                         <label id="lblpwd" for="login-password" class="label-material">Password</label>
                       </div>
                       <a id="login" (click)="logIn()" class="btn btn-primary">Login</a>
                       <!-- This should be submit button but I replaced it with <a> for demo purposes-->
-                      <a href="#" class="forgot-pass">Olvido su password?</a><br>
+                      <a (click)="clearRemember()" data-toggle="modal" data-target="#exampleModalCenter" style="color: #796AEE;cursor: pointer;" class="forgot-pass">Olvido su password?</a><br>
                       <div *ngIf="isError" class="alert alert-danger" role="alert">
                          <strong>Ocurrio un error!</strong> {{errorMessage}}
                       </div>
@@ -42,3 +42,37 @@
        </p>
     </div>
  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Recordar Datos</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div *ngIf="!onGettingUser && !onPasswordMessage" class="form-group">
+                <label for="exampleInputEmail1">Por favor ingrese su RUT:</label>
+                <input type="text" [(ngModel)] ="rememberRut" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Ingrese su RUT...">
+                <small id="emailHelp" class="form-text text-muted">Enviaremos los datos de su cuenta al correo suministrado.</small>
+              </div>
+            <div *ngIf="onPasswordMessage" class="alert alert-info" role="alert">
+                <strong>{{rememberPasswordMessage}}</strong>
+              </div>
+              <div *ngIf="onGettingUser" style="text-align: center;">
+                  <div class="spinner-outer">
+                     <div class="spin"></div>
+                  </div>
+                  ESTAMOS BUSCANDO EL USUARIO
+               </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+          <button *ngIf="!onGettingUser && !onPasswordMessage" (click)="rememberPassword()" type="button" class="btn btn-primary">Siguiente</button>
+        </div>
+      </div>
+    </div>
+  </div>
